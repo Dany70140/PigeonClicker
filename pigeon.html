@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="assets/CSS/bootstrap.min.css">
     <link rel="stylesheet" href="assets/CSS/style.css">
-    <link rel="stylesheet" href=" https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         section {
             padding: 60px 0;
@@ -30,37 +30,28 @@
             </div>
         </div>
     </nav>
-
-    <script>
-        window.addEventListener("load", function() {
-            const navItems = document.querySelectorAll(".navbar-nav .nav-item");
-            navItems.forEach((item, index) => {
-                setTimeout(() => {
-                    item.classList.add("animate");
-                }, index * 100);
-            });
-        });
-    </script>
 </header>
+
 <div class="container">
+    <!-- Affichage du compteur de pigeons -->
     <p class="fs-1 text-center jaune mt-5 arrondir p-2 text-black">
         Nombre de pigeons : <span id="compteur">1</span>
     </p>
-    <div class="row arrondir bordure-grise p-3 bg-jaune text-black">
-        <div id="compteur-container">
 
-        </div>
+    <!-- Section des pigeons et des objectifs -->
+    <div class="row arrondir bordure-grise p-3 bg-jaune text-black">
+
         <img src="assets/images/pigeon.png" id="pigeon">
         <div class="col">
-            <p class="text-center fs-3">
+            <div class="text-center fs-3">
                 Objectifs
-                <button id="double-btn" style="display: none;" class="btn btn-lg w-100">Doubler les pigeons par clic</button>
-            </p>
+                <div id="objectif-text" class="text-center fs-3 mb-3">Atteindre 10 Pigeons...</div> <!-- Objectif à atteindre -->
+                <button id="double-btn" style="display: none;" class="btn btn-lg w-100">Doubler les pigeons par clic</button> <!-- Bouton pour doubler -->
+            </div>
         </div>
     </div>
 </div>
 
-
-<script src="pigeon.js"></script>
+<script src="pigeon.js"></script> <!-- Le fichier JavaScript où se trouve la logique de jeu -->
 </body>
 </html>

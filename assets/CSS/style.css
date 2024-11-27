@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(to left, #0095ff, #000000);;
+    background: linear-gradient(to left, #0061a6, #000000);;
     font-family: Arial Black;
 }
 
@@ -110,7 +110,9 @@ body {
 #pigeon{
     width:30%;
     height:30%;
+    border-right: solid #000;
 }
+
 .pigeon {
     transition: opacity 1s ease-in-out;
 }
@@ -122,4 +124,14 @@ body {
 #double-btn {
     background-color: #0093fc;
     color: white;
+}
+
+#objectif-text {
+    color: #0093fc;
+    border: solid #0093fc;
+    border-radius: 20px;
+    border-width: 5px;
+    font-family: Calibri;
+    width: 200px;
+    padding: 5px;
 }
