@@ -1,6 +1,6 @@
 let clicsRecents = 0;
 const limiteClicsParSeconde = 20;
-const intervalleDeTemps = 1000;
+const intervalleDeTemps = 100;
 
 function verifierClicsParSeconde() {
     clicsRecents++;
