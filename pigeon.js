@@ -58,15 +58,32 @@ function creerPigeons(nombre) {
     updateUI();
 }
 
-// Fonction pour acheter une amélioration
+// Nouvelle amélioration : Nids stratégiques
+upgrades[3] = { cost: 200, multiplier: 5, description: "Ajoute une production passive de 5 pigeons/seconde." };
+
+
+
+// Fonction mise à jour pour les nids stratégiques
+function startStrategicNests() {
+    setInterval(() => {
+        nombreDePigeons += upgrades[3].multiplier;
+        updateUI();
+    }, 1000);
+}
+
+// Appeler dans buyUpgrade si l'amélioration "Nids stratégiques" est achetée
 function buyUpgrade(upgradeId) {
     if (nombreDePigeons >= upgrades[upgradeId].cost) {
         nombreDePigeons -= upgrades[upgradeId].cost;
+
         if (upgradeId === 1) {
             pigeonsParClic *= upgrades[upgradeId].multiplier;
         } else if (upgradeId === 2) {
             startAutoProduction(upgrades[upgradeId].multiplier);
+        } else if (upgradeId === 3) {
+            startStrategicNests();
         }
+
         upgrades[upgradeId].cost *= 2;
         updateUI();
     }
@@ -80,25 +97,61 @@ function startAutoProduction(multiplier) {
     }, 1000); // Ajoute des pigeons chaque seconde
 }
 
+//fonction de maj
+
+
+
 // Fonction pour mettre à jour l'interface
 function updateUI() {
     document.getElementById('compteur').textContent = nombreDePigeons;
 
-    // Mise à jour des coûts des améliorations
     for (let id in upgrades) {
         document.getElementById(`cost${id}`).textContent = upgrades[id].cost;
         document.getElementById(`upgrade${id}`).disabled = nombreDePigeons < upgrades[id].cost;
     }
 
-    // Mise à jour des objectifs
-    const prochainePuissanceDeDix = Math.pow(10, Math.ceil(Math.log10(nombreDePigeons + 1)));
-    document.getElementById('objectif-text').textContent = `Atteindre ${prochainePuissanceDeDix} Pigeons...`;
+    updateProgressBar(); // Mise à jour de la barre de progression
+    updateObjectif();    // Mise à jour des objectifs dynamiques
 }
 
 // Gestion du clic sur le pigeon initial
 document.getElementById('pigeon').addEventListener('click', () => {
     creerPigeons(pigeonsParClic);
 });
+
+// Liste des objectifs
+let objectifs = [
+    { seuil: 10, message: "Conquête de la Rue : Atteignez 10 pigeons pour progresser." },
+    { seuil: 100, message: "Conquête du Quartier : Atteignez 100 pigeons pour prendre le contrôle du quartier." },
+    { seuil: 1000, message: "Conquête de la Ville : Atteignez 1 000 pigeons pour régner sur une ville entière." },
+    { seuil: 10000, message: "Domination Mondiale : Atteignez 10 000 pigeons pour conquérir le monde." },
+    { seuil: 100000, message: "Conquête de l'Espace : Atteignez 100 000 pigeons pour voyager dans l'espace." }
+];
+
+let objectifIndex = 0; // Index du premier objectif
+
+// Gestion des barres de progression
+function updateProgressBar() {
+    const prochainePuissanceDeDix = Math.pow(10, Math.ceil(Math.log10(nombreDePigeons + 1)));
+    const barre = document.getElementById('progress-bar');
+    const progression = (nombreDePigeons / objectifs[objectifIndex].seuil) * 100;
+    barre.style.width = `${progression}%`;
+    barre.textContent = `${Math.floor(progression)}%`;
+}
+
+// Fonction pour mettre à jour les objectifs dynamiquement
+function updateObjectif() {
+    if (objectifIndex < objectifs.length && nombreDePigeons >= objectifs[objectifIndex].seuil) {
+        objectifIndex++; // Passe à l'objectif suivant
+    }
+
+    // Met à jour le texte de l'objectif affiché
+    if (objectifIndex < objectifs.length) {
+        document.getElementById('objectif-text').textContent = objectifs[objectifIndex].message;
+    } else {
+        document.getElementById('objectif-text').textContent = "Félicitations, vous avez atteint tous les objectifs !";
+    }
+}
 
 // Initialisation de l'interface
 updateUI();
