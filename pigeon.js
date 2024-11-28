@@ -1,88 +1,58 @@
-// Sélectionne les éléments nécessaires
-const pigeon = document.getElementById('pigeon');
-const compteur = document.getElementById('compteur');
-const doubleBtn = document.getElementById('double-btn');
-const objectifText = document.getElementById('objectif-text');
+// Variables principales
+let nombreDePigeons = 1; // Compteur total de pigeons
+let pigeonsParClic = 1;  // Nombre de pigeons produits par clic
 
-// Initialise le nombre de pigeons et le multiplicateur
-let nombreDePigeons = 1;
-let pigeonsParClic = 1;
-let prochainePuissanceDeDix = 10;
-let objectifAtteint = false;
+// Améliorations disponibles
+let upgrades = {
+    1: { cost: 10, multiplier: 2, description: "Double les pigeons par clic." },
+    2: { cost: 50, multiplier: 1, description: "Augmente passivement la production par seconde." }
+};
 
-// Fonction pour générer des positions aléatoires
-function positionAleatoire() {
-    const x = Math.random() * (window.innerWidth - 50);
-    const y = Math.random() * (window.innerHeight - 50);
-    return { x, y };
-}
+// Fonction pour acheter une amélioration
+function buyUpgrade(upgradeId) {
+    if (nombreDePigeons >= upgrades[upgradeId].cost) {
+        nombreDePigeons -= upgrades[upgradeId].cost;
 
-// Fonction pour créer un certain nombre de pigeons
-function creerPigeons(nombre) {
-    for (let i = 0; i < nombre; i++) {
-        const nouvellePosition = positionAleatoire();
+        if (upgradeId === 1) {
+            pigeonsParClic *= upgrades[upgradeId].multiplier; // Multiplie la production par clic
+        } else if (upgradeId === 2) {
+            startAutoProduction(upgrades[upgradeId].multiplier); // Lancement de la production automatique
+        }
 
-        // Crée une nouvelle image de pigeon
-        const nouveauPigeon = document.createElement('img');
-        nouveauPigeon.src = 'assets/images/pigeon.png';
-        nouveauPigeon.style.position = 'absolute';
-        nouveauPigeon.style.left = `${nouvellePosition.x}px`;
-        nouveauPigeon.style.top = `${nouvellePosition.y}px`;
-        nouveauPigeon.style.width = '50px';
-        nouveauPigeon.style.cursor = 'pointer';
-        nouveauPigeon.classList.add('pigeon'); // Ajout de la classe pour l'animation
-
-        // Ajoute le pigeon à la page
-        document.body.appendChild(nouveauPigeon);
-
-        // Ajoute l'événement au pigeon pour qu'il crée de nouveaux pigeons lors du clic
-        nouveauPigeon.addEventListener('click', () => creerPigeons(pigeonsParClic));
-
-        // Incrémente le compteur de pigeons
-        nombreDePigeons++;
-
-        // Lance la disparition du pigeon après 3 secondes
-        setTimeout(() => {
-            nouveauPigeon.classList.add('disparition');
-            // Retire l'élément du DOM après l'animation (1 seconde d'animation)
-            setTimeout(() => {
-                nouveauPigeon.remove();
-            }, 500);
-        }, 0);
-    }
-
-    // Met à jour l'affichage du compteur de pigeons
-    compteur.textContent = nombreDePigeons;
-
-    // Affiche l'objectif
-    objectifText.textContent = `Atteindre ${prochainePuissanceDeDix} Pigeons...`;
-
-    // Affiche le bouton si le nombre de pigeons atteint ou dépasse l'objectif
-    if (nombreDePigeons >= prochainePuissanceDeDix) {
-        // Si l'objectif est atteint, cacher le texte de l'objectif et afficher le bouton
-        objectifText.style.display = 'none';
-        doubleBtn.style.display = 'block';
+        upgrades[upgradeId].cost *= 2; // Augmente le coût de l'amélioration
+        updateUI();
     }
 }
 
-// Ajoute l'événement de clic au pigeon initial
-pigeon.addEventListener('click', () => creerPigeons(pigeonsParClic));
+// Fonction pour démarrer la production automatique
+function startAutoProduction(multiplier) {
+    setInterval(() => {
+        nombreDePigeons += multiplier;
+        updateUI();
+    }, 1000); // Production chaque seconde
+}
 
-// Ajoute l'événement de clic au bouton pour doubler les pigeons par clic
-doubleBtn.addEventListener('click', () => {
-    // Double le nombre de pigeons par clic
-    pigeonsParClic *= 2;
+// Fonction pour mettre à jour l'interface
+function updateUI() {
+    // Mise à jour du compteur
+    document.getElementById('compteur').textContent = nombreDePigeons;
 
-    // Cache le bouton de doublement
-    doubleBtn.style.display = 'none';
+    // Mise à jour des coûts des améliorations
+    for (let id in upgrades) {
+        document.getElementById(`cost${id}`).textContent = upgrades[id].cost;
+        document.getElementById(`upgrade${id}`).disabled = nombreDePigeons < upgrades[id].cost;
+    }
 
-    // Met à jour la prochaine puissance de 10
-    prochainePuissanceDeDix *= 10;
+    // Mise à jour des objectifs
+    const prochainePuissanceDeDix = Math.pow(10, Math.ceil(Math.log10(nombreDePigeons + 1)));
+    document.getElementById('objectif-text').textContent = `Atteindre ${prochainePuissanceDeDix} Pigeons...`;
+}
 
-    // Réinitialiser l'objectif
-    objectifAtteint = false;
-
-    // Afficher à nouveau le texte de l'objectif
-    objectifText.style.display = 'block';
-    objectifText.textContent = `Atteindre ${prochainePuissanceDeDix} Pigeons...`;
+// Gestion des clics sur le pigeon
+document.getElementById('pigeon').addEventListener('click', () => {
+    nombreDePigeons += pigeonsParClic;
+    updateUI();
 });
+
+// Initialisation de l'interface
+updateUI();

@@ -34,7 +34,7 @@
 
 <div class="container">
     <!-- Affichage du compteur de pigeons -->
-    <p class="fs-1 text-center jaune mt-5 arrondir p-2 text-black">
+    <p class="fs-1 text-center jaune mt-5 arrondir p-2 text-black" id="nombreDePigeons">
         Nombre de pigeons : <span id="compteur">1</span>
     </p>
 
@@ -45,9 +45,20 @@
         <div class="col">
             <div class="text-center fs-3">
                 Objectifs
-                <div id="objectif-text" class="text-center fs-3 mb-3">Atteindre 10 Pigeons...</div> <!-- Objectif à atteindre -->
+                <div id="objectif-text" class="text-center fs-3 mb-3 w-100 ">Atteindre 10 Pigeons...</div> <!-- Objectif à atteindre -->
                 <button id="double-btn" style="display: none;" class="btn btn-lg w-100">Doubler les pigeons par clic</button> <!-- Bouton pour doubler -->
             </div>
+        </div>
+        <div class="upgrades mt-4">
+            <h2 class="text-center">Améliorations</h2>
+            <div class="d-flex justify-content-center gap-3">
+                <button id="upgrade1" class="btn btn-success" onclick="buyUpgrade(1)">Pain Enchanté (Coût : <span id="cost1">10</span>)</button>
+                <button id="upgrade2" class="btn btn-warning" onclick="buyUpgrade(2)">Entraînement au vol (Coût : <span id="cost2">50</span>)</button>
+            </div>
+        </div>
+        <div class="goals">
+            <h2>Objectifs</h2>
+            <p id="goal">Conquête de la Rue : Atteignez 10 pigeons pour progresser.</p>
         </div>
     </div>
 </div>
