@@ -1,13 +1,13 @@
 // Variables principales
 let nombreDePigeons = 1; // Compteur total de pigeons
 let pigeonsParClic = 1;  // Nombre de pigeons produits par clic
+const maxPigeonsActifs = 50; // Limite de pigeons actifs sur la page
 
 // Améliorations disponibles
 let upgrades = {
     1: { cost: 10, multiplier: 2, description: "Double les pigeons par clic." },
     2: { cost: 50, multiplier: 1, description: "Augmente passivement la production par seconde." }
 };
-
 
 // Fonction pour générer des positions aléatoires
 function positionAleatoire() {
@@ -18,7 +18,14 @@ function positionAleatoire() {
 
 // Fonction pour créer un certain nombre de pigeons
 function creerPigeons(nombre) {
-    for (let i = 0; i < nombre; i++) {
+    const pigeonsActuels = document.querySelectorAll('.pigeon').length;
+
+    // Vérifie si le nombre actuel de pigeons est inférieur à la limite
+    if (pigeonsActuels >= maxPigeonsActifs) return;
+
+    const pigeonsAAjouter = Math.min(nombre, maxPigeonsActifs - pigeonsActuels);
+
+    for (let i = 0; i < pigeonsAAjouter; i++) {
         const nouvellePosition = positionAleatoire();
 
         // Crée une nouvelle image de pigeon
@@ -29,40 +36,38 @@ function creerPigeons(nombre) {
         nouveauPigeon.style.top = `${nouvellePosition.y}px`;
         nouveauPigeon.style.width = '50px';
         nouveauPigeon.style.cursor = 'pointer';
-        nouveauPigeon.classList.add('pigeon'); // Ajout de la classe pour l'animation
+        nouveauPigeon.classList.add('pigeon'); // Classe pour l'animation
 
-        // Ajoute le pigeon à la page pour ouvoir commit
+        // Ajoute le pigeon à la page
         document.body.appendChild(nouveauPigeon);
-        updateUI()
 
-        // Ajoute l'événement au pigeon pour qu'il crée de nouveaux pigeons lors du clic
+        // Ajoute l'événement de clic au nouveau pigeon
         nouveauPigeon.addEventListener('click', () => creerPigeons(pigeonsParClic));
 
-        // Incrémente le compteur de pigeons
-        nombreDePigeons++;
-
-        // Lance la disparition du pigeon après 3 secondes
+        // Lance la disparition après 3 secondes
         setTimeout(() => {
             nouveauPigeon.classList.add('disparition');
-            // Retire l'élément du DOM après l'animation (1 seconde d'animation)
             setTimeout(() => {
                 nouveauPigeon.remove();
-            }, 500);
-        }, 0);
+            }, 500); // Temps de l'animation de disparition
+        }, 0); // Le pigeon reste visible 3 secondes
     }
+
+    // Met à jour le compteur
+    nombreDePigeons += pigeonsAAjouter;
+    updateUI();
+}
 
 // Fonction pour acheter une amélioration
 function buyUpgrade(upgradeId) {
     if (nombreDePigeons >= upgrades[upgradeId].cost) {
         nombreDePigeons -= upgrades[upgradeId].cost;
-
         if (upgradeId === 1) {
-            pigeonsParClic *= upgrades[upgradeId].multiplier; // Multiplie la production par clic
+            pigeonsParClic *= upgrades[upgradeId].multiplier;
         } else if (upgradeId === 2) {
-            startAutoProduction(upgrades[upgradeId].multiplier); // Lancement de la production automatique
+            startAutoProduction(upgrades[upgradeId].multiplier);
         }
-
-        upgrades[upgradeId].cost *= 2; // Augmente le coût de l'amélioration
+        upgrades[upgradeId].cost *= 2;
         updateUI();
     }
 }
@@ -72,12 +77,11 @@ function startAutoProduction(multiplier) {
     setInterval(() => {
         nombreDePigeons += multiplier;
         updateUI();
-    }, 1000); // Production chaque seconde
+    }, 1000); // Ajoute des pigeons chaque seconde
 }
 
 // Fonction pour mettre à jour l'interface
 function updateUI() {
-    // Mise à jour du compteur
     document.getElementById('compteur').textContent = nombreDePigeons;
 
     // Mise à jour des coûts des améliorations
@@ -91,10 +95,9 @@ function updateUI() {
     document.getElementById('objectif-text').textContent = `Atteindre ${prochainePuissanceDeDix} Pigeons...`;
 }
 
-// Gestion des clics sur le pigeon
+// Gestion du clic sur le pigeon initial
 document.getElementById('pigeon').addEventListener('click', () => {
-    nombreDePigeons += pigeonsParClic;
-    updateUI();
+    creerPigeons(pigeonsParClic);
 });
 
 // Initialisation de l'interface
