@@ -6,7 +6,11 @@ const maxPigeonsActifs = 50; // Limite de pigeons actifs sur la page
 // Améliorations disponibles
 let upgrades = {
     1: { cost: 10, multiplier: 2, description: "Double les pigeons par clic." },
-    2: { cost: 50, multiplier: 1, description: "Augmente passivement la production par seconde." }
+    2: { cost: 50, multiplier: 1, description: "Augmente passivement la production par seconde." },
+    // Nouvelle amélioration : Nids stratégiques
+    3: { cost: 200, multiplier: 5, description: "Ajoute une production passive de 5 pigeons/seconde." },
+    // Nouvelle amélioration : Drone Pigeon
+    4: { cost: 500, multiplier: 10, description: "Drone Pigeon : Augmente massivement la production par clic." }
 };
 
 // Fonction pour générer des positions aléatoires
@@ -58,10 +62,6 @@ function creerPigeons(nombre) {
     updateUI();
 }
 
-// Nouvelle amélioration : Nids stratégiques
-upgrades[3] = { cost: 200, multiplier: 5, description: "Ajoute une production passive de 5 pigeons/seconde." };
-
-
 
 // Fonction mise à jour pour les nids stratégiques
 function startStrategicNests() {
@@ -82,9 +82,10 @@ function buyUpgrade(upgradeId) {
             startAutoProduction(upgrades[upgradeId].multiplier);
         } else if (upgradeId === 3) {
             startStrategicNests();
+        }if (upgradeId === 4) {
+            pigeonsParClic += upgrades[upgradeId].multiplier; // Boost énorme pour les clics
         }
-
-        upgrades[upgradeId].cost *= 2;
+        upgrades[upgradeId].cost *= 2; // Le coût double à chaque achat
         updateUI();
     }
 }
@@ -97,10 +98,6 @@ function startAutoProduction(multiplier) {
     }, 1000); // Ajoute des pigeons chaque seconde
 }
 
-//fonction de maj
-
-
-
 // Fonction pour mettre à jour l'interface
 function updateUI() {
     document.getElementById('compteur').textContent = nombreDePigeons;
@@ -112,7 +109,9 @@ function updateUI() {
 
     updateProgressBar(); // Mise à jour de la barre de progression
     updateObjectif();    // Mise à jour des objectifs dynamiques
+    updateObjectif2();    // Mise à jour des objectifs2 dynamiques
 }
+
 
 // Gestion du clic sur le pigeon initial
 document.getElementById('pigeon').addEventListener('click', () => {
@@ -142,16 +141,63 @@ function updateProgressBar() {
 // Fonction pour mettre à jour les objectifs dynamiquement
 function updateObjectif() {
     if (objectifIndex < objectifs.length && nombreDePigeons >= objectifs[objectifIndex].seuil) {
-        objectifIndex++; // Passe à l'objectif suivant
+        objectifIndex++;
+        const objectifElement = document.getElementById('objectif-text');
+        objectifElement.classList.add('highlight');
+        setTimeout(() => objectifElement.classList.remove('highlight'), 500); // Retire l'effet après 500ms
     }
 
-    // Met à jour le texte de l'objectif affiché
     if (objectifIndex < objectifs.length) {
         document.getElementById('objectif-text').textContent = objectifs[objectifIndex].message;
     } else {
         document.getElementById('objectif-text').textContent = "Félicitations, vous avez atteint tous les objectifs !";
     }
 }
+
+function updateObjectif2() {
+    if (objectifIndex < objectifs.length && nombreDePigeons >= objectifs[objectifIndex].seuil) {
+        objectifIndex++;
+        const objectifElement = document.getElementById('goal');
+        objectifElement.classList.add('highlight');
+        setTimeout(() => objectifElement.classList.remove('highlight'), 500); // Retire l'effet après 500ms
+    }
+
+    if (objectifIndex < objectifs.length) {
+        document.getElementById('goal').textContent = objectifs[objectifIndex].message;
+    } else {
+        document.getElementById('goal').textContent = "Félicitations, vous avez atteint tous les objectifs !";
+    }
+}
+
+//Bonus aléatoire
+function spawnBonus() {
+    const bonus = document.createElement('img');
+    bonus.src = 'assets/images/bonus.png'; // Ajoutez une icône bonus
+    bonus.style.position = 'absolute';
+    const { x, y } = positionAleatoire();
+    bonus.style.left = `${x}px`;
+    bonus.style.top = `${y}px`;
+    bonus.style.width = '40px';
+    bonus.style.cursor = 'pointer';
+    bonus.classList.add('bonus');
+    document.body.appendChild(bonus);
+
+    // Quand le joueur clique sur le bonus
+    bonus.addEventListener('click', () => {
+        nombreDePigeons += 100; // Donne un bonus de 100 pigeons
+        bonus.remove();
+        updateUI();
+    });
+
+    // Le bonus disparaît après 5 secondes
+    setTimeout(() => {
+        bonus.remove();
+    }, 5000);
+}
+
+// Générer des bonus toutes les 15-30 secondes
+setInterval(spawnBonus, Math.random() * 15000 + 15000);
+
 
 // Initialisation de l'interface
 updateUI();

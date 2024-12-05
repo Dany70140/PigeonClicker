@@ -135,3 +135,12 @@ body {
     width: 200px;
     padding: 5px;
 }
+
+#objectif-text {
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+#objectif-text.highlight {
+    color: #28a745; /* Couleur verte pour indiquer le succès */
+    transform: scale(1.2);
+}
